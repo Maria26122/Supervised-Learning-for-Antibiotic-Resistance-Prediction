@@ -1,28 +1,28 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
-# Sample model evaluation and attributes
-model_evaluation = {
-    'accuracy': 0.95,
-    'precision': 0.93,
-    'recall': 0.92,
-    'f1_score': 0.925
-}
+# Placeholder for model prediction logic
+def predict_resistance(genome_data):
+    # This function should contain the logic to predict resistance or sensitivity
+    # For demonstration, it returns a dummy response
+    return {
+        'genome': genome_data,
+        'prediction': 'resistant' if len(genome_data) % 2 == 0 else 'sensitive'
+    }
 
-model_attributes = {
-    'name': 'SampleModel',
-    'version': '1.0',
-    'description': 'A sample model for demonstration purposes'
-}
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-@app.route('/model/evaluation', methods=['GET'])
-def get_model_evaluation():
-    return jsonify(model_evaluation)
-
-@app.route('/model/attributes', methods=['GET'])
-def get_model_attributes():
-    return jsonify(model_attributes)
+@app.route('/predict', methods=['POST'])
+def predict():
+    genome_data = request.form.get('genome_data')
+    if not genome_data:
+        return jsonify({'error': 'No genome data provided'}), 400
+    
+    prediction_result = predict_resistance(genome_data)
+    return jsonify(prediction_result)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -6,7 +6,7 @@ Supervised-Learning-for-Antibiotic-Resistance-Prediction is a project aimed at p
 ## Features
 
 - **Model Evaluation**: Provides metrics such as accuracy, precision, recall, and F1 score to evaluate the performance of the model.
-- **Model Attributes**: Details about the model including its name, version, and description.
+- **Model Attributes**:Logisctic Regression is used .
 
 ## Getting Started
 
@@ -27,7 +27,7 @@ Supervised-Learning-for-Antibiotic-Resistance-Prediction is a project aimed at p
    ```
 3. Install the required packages:
    ```bash
-   pip install -r requirements.txt
+   pip install -r requirements.ipynb
    ```
 
 ## Usage
@@ -50,4 +50,4 @@ Contributions are welcome! Please fork the repository and submit a pull request 
 
 ## Contact
 
-For any inquiries, please contact Maria Islam Shuchona at [your-email@example.com].
+For any inquiries, please contact Maria Islam Shuchona at [mariaislam1226@gmail.com].
