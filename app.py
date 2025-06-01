@@ -1,75 +1,45 @@
-from flask import Flask, render_template, jsonify, request
-import pickle
-import numpy as np
-import pandas as pd
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Antibiotic Resistance Predictor</title>
+</head>
+<body>
+    <h1>Antibiotic Resistance Predictor</h1>
 
-app = Flask(__name__)
+    <h2>Enter Genome Features:</h2>
+    <form id="predictForm">
+        <input type="number" step="any" name="f1" placeholder="Feature 1"><br>
+        <input type="number" step="any" name="f2" placeholder="Feature 2"><br>
+        <input type="number" step="any" name="f3" placeholder="Feature 3"><br>
+        <!-- Add more inputs based on model needs -->
+        <button type="submit">Predict</button>
+    </form>
 
-# Load the trained model
-try:
-    with open('logistic_model_pipeline.pkl', 'rb') as f:
-        model = pickle.load(f)
-except Exception as e:
-    print(f"Error loading model: {e}")
-    model = None
+    <h3 id="result"></h3>
 
-# Sample model evaluation and attributes
-model_evaluation = {
-    'accuracy': 0.95,
-    'precision': 0.93,
-    'recall': 0.92,
-    'f1_score': 0.925
-}
+    <script>
+        const form = document.getElementById('predictForm');
+        const result = document.getElementById('result');
 
-model_attributes = {
-    'name': 'Antibiotic Resistance Predictor',
-    'version': '1.0',
-    'description': 'A machine learning model to predict antibiotic resistance from genome data'
-}
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const features = Array.from(formData.values()).map(Number);
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+            const response = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ features })
+            });
 
-@app.route('/api/evaluation')
-def get_evaluation():
-    return jsonify(model_evaluation)
+            const data = await response.json();
 
-@app.route('/api/attributes')
-def get_attributes():
-    return jsonify(model_attributes)
-
-@app.route('/api/predict', methods=['POST'])
-def predict():
-    if model is None:
-        return jsonify({'error': 'Model not loaded'}), 500
-    
-    try:
-        data = request.get_json()
-        if not data or 'features' not in data:
-            return jsonify({'error': 'No features provided'}), 400
-        
-        # Convert features to numpy array
-        features = np.array(data['features']).reshape(1, -1)
-        
-        # Make prediction
-        prediction = model.predict(features)
-        probability = model.predict_proba(features)
-        
-        # Show prediction options
-        prediction_options = {
-            0: 'Susceptible',
-            1: 'Resistant'
-        }
-        
-        return jsonify({
-            'prediction': int(prediction[0]),
-            'probability': float(probability[0][1]),
-            'interpretation': prediction_options.get(int(prediction[0]), 'Unknown')
-        })
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+            if (data.error) {
+                result.textContent = `Error: ${data.error}`;
+            } else {
+                result.textContent = `Prediction: ${data.interpretation} (Probability: ${data.probability.toFixed(2)})`;
+            }
+        });
+    </script>
+</body>
+</html>
